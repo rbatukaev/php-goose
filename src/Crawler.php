@@ -44,8 +44,15 @@ class Crawler {
 
         if (empty($rawHTML)) {
             $guzzle = new \GuzzleHttp\Client();
-            $response = $guzzle->get($parseCandidate->url, $this->config()->get('browser'));
-            $article->setRawResponse($response);
+            $response = $guzzle->get($parseCandidate->url, ['stream' => true] + $this->config()->get('browser'));
+            $length = $response->getHeader('Content-Length')[0] ?? 0;
+            if ($length > 5242880) {
+                return null;
+            }
+            $headersRedirect = $response->getHeader(\GuzzleHttp\RedirectMiddleware::HISTORY_HEADER);
+            if ($headersRedirect) {
+                $parseCandidate->url = array_pop($headersRedirect) ?: $parseCandidate->url;
+            }
             $rawHTML = $response->getBody()->getContents();
         }
 
