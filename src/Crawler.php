@@ -47,7 +47,7 @@ class Crawler {
             $response = $guzzle->get($parseCandidate->url, ['stream' => true] + $this->config()->get('browser'));
             $length = $response->getHeader('Content-Length')[0] ?? 0;
             if ($length > 5242880) {
-                return null;
+                throw new \RuntimeException('File Download Warning');
             }
             $headersRedirect = $response->getHeader(\GuzzleHttp\RedirectMiddleware::HISTORY_HEADER);
             if ($headersRedirect) {
