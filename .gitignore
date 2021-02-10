@@ -4,3 +4,4 @@ phpunit.xml
 vendor
 build
 /.idea
+.phpunit.result.cache
